@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  bot:
+    build: .
+    container_name: tg_chat_summary_bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./:/app
+    environment:
+      - TZ=UTC
+    command: ["python", "bot.py"]
