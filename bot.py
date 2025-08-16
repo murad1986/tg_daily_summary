@@ -128,8 +128,10 @@ async def summarize_messages_for_chat(chat_id: int) -> Optional[str]:
 
 
 async def send_daily_summary(bot: Bot) -> None:
+    print(f"[send_daily_summary] Запуск в {datetime.now(timezone.utc)}")
     since_time = datetime.now(timezone.utc) - timedelta(days=1)
     chat_ids = db.get_active_chat_ids_since(since_time)
+    print(f"[send_daily_summary] Найдено активных чатов: {len(chat_ids)}")
 
     for chat_id in chat_ids:
         summary = await summarize_messages_for_chat(chat_id)
@@ -149,8 +151,10 @@ async def send_daily_summary(bot: Bot) -> None:
 
 def setup_scheduler(app: Application) -> AsyncIOScheduler:
     scheduler = AsyncIOScheduler(timezone=timezone.utc)
+    print(f"[scheduler] Настройка планировщика на {datetime.now(timezone.utc)}")
 
     async def job_wrapper() -> None:
+        print(f"[scheduler] Срабатывание планировщика в {datetime.now(timezone.utc)}")
         await send_daily_summary(app.bot)
 
     scheduler.add_job(
@@ -158,6 +162,7 @@ def setup_scheduler(app: Application) -> AsyncIOScheduler:
         trigger=CronTrigger(hour=21, minute=0, timezone=timezone.utc),
     )
     scheduler.start()
+    print("[scheduler] Планировщик запущен на 21:00 UTC")
     return scheduler
 
 
